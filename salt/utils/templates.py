@@ -12,6 +12,8 @@ import logging
 import tempfile
 import traceback
 import sys
+import stringIO
+import shutil
 
 # Import 3rd-party libs
 import jinja2
@@ -531,6 +533,12 @@ def py(sfn, string=False, **kwargs):  # pylint: disable=C0103
         {'result': bool,
          'data': <Error data or rendered file path>}
     '''
+    fp = None
+    if isinstance(sfn, StringIO.StringIO):
+        filename = salt.utils.files.mkstemp()
+        with open(filename, 'w') as fd:
+            shutil.copyfileobj(sfn, fd)
+        sfn = filename
     if not os.path.isfile(sfn):
         return {}
 
@@ -549,7 +557,7 @@ def py(sfn, string=False, **kwargs):  # pylint: disable=C0103
         sys.modules[name] = mod
     else:
         mod = imp.load_source(name, sfn)
-
+    os.remove(sfn)
     # File templates need these set as __var__
     if '__env__' not in kwargs and 'saltenv' in kwargs:
         setattr(mod, '__env__', kwargs['saltenv'])

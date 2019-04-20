@@ -126,9 +126,9 @@ def render(template, saltenv='base', sls='', tmplpath=None, **kws):
 
     :rtype: string
     '''
-    template = tmplpath
-    if not os.path.isfile(template):
-        raise SaltRenderError('Template {0} is not a file!'.format(template))
+    #template = tmplpath
+    if not os.path.isfile(tmplpath):
+        raise SaltRenderError('Template {0} is not a file!'.format(tmplpath))
 
     tmp_data = salt.utils.templates.py(
             template,
